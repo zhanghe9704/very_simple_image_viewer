@@ -19,8 +19,8 @@ class PictureViewer:
         frame.pack(side=tk.BOTTOM, pady=5)
 
         # Buttons for control
-        btn_open = tk.Button(frame, text="Open", command=self.open_image)
-        btn_open.pack(side=tk.LEFT, padx=10)
+        self.btn_open = tk.Button(frame, text="Open", command=self.open_image)
+        self.btn_open.pack(side=tk.LEFT, padx=10)
 
         # The label that holds the image
         self.img_label = tk.Label(self.root)
@@ -57,6 +57,9 @@ class PictureViewer:
             photo = ImageTk.PhotoImage(image)
             self.img_label.config(image=photo)
             self.img_label.image = photo  # keep a reference!
+            
+            # Hide the open button
+            self.btn_open.pack_forget()
             
             # # Update the file name label
             # file_name = os.path.basename(image_path)
