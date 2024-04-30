@@ -9,6 +9,8 @@ class PictureViewer:
     def __init__(self, root):
         self.root = root
         self.root.title("Simple Picture Viewer")
+        self.last_width = self.root.winfo_width()
+        self.last_height = self.root.winfo_height()
         
         # # Label to display the file name
         # self.file_name_label = tk.Label(self.root, text="", font=("Helvetica", 16))
@@ -29,6 +31,12 @@ class PictureViewer:
         # To keep track of the image list and the current index
         self.images = []
         self.current_image_index = 0
+        self.image= None
+        
+        # Bind the configure event to dynamically resize the image
+        self.root.bind("<Configure>", self.resize_image)
+        self.current_photo_image = None  # To hold the PhotoImage object
+        self.resize_timer = None  # Initialize a variable for the resize timer
 
         # Binding key and mouse events
         self.root.bind("<MouseWheel>", self.scroll_image)
@@ -45,7 +53,6 @@ class PictureViewer:
                            if os.path.isfile(os.path.join(directory, f)) and f.endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif'))]
             files = [f for f in os.listdir(directory)
                            if os.path.isfile(os.path.join(directory, f)) and f.endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif'))]
-            # self.current_image_index = self.images.index(path)
             self.current_image_index = files.index(os.path.basename(path))
             self.display_image()
 
@@ -54,9 +61,14 @@ class PictureViewer:
         if self.images:
             image_path = self.images[self.current_image_index]
             image = Image.open(image_path)
+ 
+            self.image = image
+            
             photo = ImageTk.PhotoImage(image)
             self.img_label.config(image=photo)
             self.img_label.image = photo  # keep a reference!
+            self.current_photo_image =  photo
+
             
             # Hide the open button
             self.btn_open.pack_forget()
@@ -65,7 +77,36 @@ class PictureViewer:
             # file_name = os.path.basename(image_path)
             # self.file_name_label.config(text=file_name)
             
-
+            
+    def resize_image(self, event):
+        """Resize the image to fit the current canvas size, maintaining aspect ratio."""
+        if not self.image:
+            return
+        
+        original_width, original_height = self.image.size
+        # Get dimensions directly from the root window
+        root_width = self.root.winfo_width()
+        root_height = self.root.winfo_height()
+        
+        if root_width != self.last_width or root_height != self.last_height:     
+            label_width = root_width - 4
+            label_height = root_height - 36 -4
+            if label_height < 0:
+                label_height = 0
+                
+            # Calculate the appropriate size maintaining aspect ratio
+            ratio = min(label_width / original_width, label_height / original_height)
+            new_width = round(original_width * ratio)
+            new_height = round(original_height * ratio)
+    
+            # Resize the image using Pillow
+            resized_image = self.image.resize((new_width, new_height), Image.LANCZOS)
+    
+            # Convert the PIL image to PhotoImage and display it
+            self.current_photo_image = ImageTk.PhotoImage(resized_image)
+            self.img_label.config(image=self.current_photo_image)
+            
+            
     def scroll_image(self, event):
         """Handle scroll or page up/down key event to navigate images."""
         if not self.images:
