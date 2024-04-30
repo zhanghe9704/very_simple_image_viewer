@@ -45,8 +45,6 @@ class PictureViewer:
         self.root.bind("<Double-Button-3>", self.show_original_size)
         
         self.resized = False
-        self.original_width = 0
-        self.original_height = 0
 
     def open_image(self, event=None):
         """Open an image file for viewing and load all images in the folder."""
@@ -68,12 +66,13 @@ class PictureViewer:
             image = Image.open(image_path)
  
             self.image = image
-            self.original_width, self.original_height = self.image.size
+            # self.original_width, self.original_height = self.image.size
 
             if self.resized:
                 self.resize_image()
+                self.btn_open.pack_forget()
                 return
-                           
+                       
             photo = ImageTk.PhotoImage(image)
             self.img_label.config(image=photo)
             self.img_label.image = photo  # keep a reference!
@@ -93,33 +92,47 @@ class PictureViewer:
         if not self.image:
             return
         
+        self.root.update_idletasks()
+        
         original_width, original_height = self.image.size
         # Get dimensions directly from the root window
         root_width = self.root.winfo_width()
         root_height = self.root.winfo_height()
         
-        if root_width != self.last_width or root_height != self.last_height:     
-            label_width = root_width - 4
-            label_height = root_height - 36 -4
-            if label_height < 0:
-                label_height = 0
-                
-            # Calculate the appropriate size maintaining aspect ratio
-            ratio = min(label_width / original_width, label_height / original_height)
-            new_width = round(original_width * ratio)
-            new_height = round(original_height * ratio)
+        # if root_width != self.last_width or root_height != self.last_height:     
+        label_width = root_width - 4
+        label_height = root_height - 36 -4
+        if label_height < 0:
+            label_height = 0
             
-            if new_width == original_width and new_height == original_height:
-                self.resized = False
-            else:
-                self.resized = True
-    
-            # Resize the image using Pillow
-            resized_image = self.image.resize((new_width, new_height), Image.LANCZOS)
-    
-            # Convert the PIL image to PhotoImage and display it
-            self.current_photo_image = ImageTk.PhotoImage(resized_image)
-            self.img_label.config(image=self.current_photo_image)
+        # Calculate the appropriate size maintaining aspect ratio
+        ratio = min(label_width / original_width, label_height / original_height)
+        new_width = round(original_width * ratio)
+        new_height = round(original_height * ratio)
+        d_w = round(0.01*original_width)
+        d_h = round(0.01*original_height)
+        
+        # if new_width == original_width and new_height == original_height:
+        if abs(new_width-original_width)<d_w and abs(new_height-original_height)<d_h:
+            self.resized = False
+        else:
+            self.resized = True
+            
+        if not self.resized:
+            image = self.image
+            photo = ImageTk.PhotoImage(image)
+            self.img_label.config(image=photo)
+            self.img_label.image = photo  # keep a reference!
+            self.current_photo_image =  photo
+            return
+
+        # Resize the image using Pillow
+        resized_image = self.image.resize((new_width, new_height), Image.LANCZOS)
+
+        # Convert the PIL image to PhotoImage and display it
+        self.current_photo_image = ImageTk.PhotoImage(resized_image)
+        self.img_label.config(image=self.current_photo_image)
+        
             
             
     def scroll_image(self, event):
@@ -140,8 +153,10 @@ class PictureViewer:
     def show_original_size(self, event):
         """Display the current image in its original size."""
         if hasattr(self, "image"):
-            # Resize the window to fit the original image size
-            self.root.geometry(f"{self.original_width}x{self.original_height}")
+            image_width, image_height = self.image.size
+            frame_width = image_width + 4
+            frame_height = image_height + 36 + 4
+            self.root.geometry(f"{frame_width}x{frame_height}")
 
                 
 if __name__ == "__main__":
