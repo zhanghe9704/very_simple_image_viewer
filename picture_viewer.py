@@ -36,7 +36,6 @@ class PictureViewer:
         # Bind the configure event to dynamically resize the image
         self.root.bind("<Configure>", self.resize_image)
         self.current_photo_image = None  # To hold the PhotoImage object
-        self.resize_timer = None  # Initialize a variable for the resize timer
 
         # Binding key and mouse events
         self.root.bind("<MouseWheel>", self.scroll_image)
@@ -131,9 +130,7 @@ class PictureViewer:
             if self.current_image_index < len(self.images) - 1:
                 self.current_image_index += 1
                 self.display_image()
-
-
-
+                
 if __name__ == "__main__":
     root = tk.Tk()
     viewer = PictureViewer(root)
