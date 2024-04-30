@@ -1,3 +1,5 @@
+import os
+import subprocess
 import tkinter as tk
 from tkinter import filedialog
 from PIL import Image, ImageTk
@@ -32,8 +34,9 @@ class PictureViewer:
         self.root.bind("<MouseWheel>", self.scroll_image)
         self.root.bind("<Next>", self.scroll_image)  # Page Down
         self.root.bind("<Prior>", self.scroll_image)  # Page Up
+        self.img_label.bind("<Double-1>", self.open_image)
 
-    def open_image(self):
+    def open_image(self, event=None):
         """Open an image file for viewing and load all images in the folder."""
         path = filedialog.askopenfilename(filetypes=[("Image files", "*.jpg *.jpeg *.png *.bmp *.gif")])
         if path:
@@ -58,6 +61,7 @@ class PictureViewer:
             # # Update the file name label
             # file_name = os.path.basename(image_path)
             # self.file_name_label.config(text=file_name)
+            
 
     def scroll_image(self, event):
         """Handle scroll or page up/down key event to navigate images."""
