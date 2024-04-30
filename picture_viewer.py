@@ -7,6 +7,10 @@ class PictureViewer:
     def __init__(self, root):
         self.root = root
         self.root.title("Simple Picture Viewer")
+        
+        # # Label to display the file name
+        # self.file_name_label = tk.Label(self.root, text="", font=("Helvetica", 16))
+        # self.file_name_label.pack(side=tk.TOP, pady=5)
 
         # Setting up the frame for navigation buttons
         frame = tk.Frame(self.root)
@@ -50,6 +54,10 @@ class PictureViewer:
             photo = ImageTk.PhotoImage(image)
             self.img_label.config(image=photo)
             self.img_label.image = photo  # keep a reference!
+            
+            # # Update the file name label
+            # file_name = os.path.basename(image_path)
+            # self.file_name_label.config(text=file_name)
 
     def scroll_image(self, event):
         """Handle scroll or page up/down key event to navigate images."""
