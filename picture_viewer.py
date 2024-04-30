@@ -63,13 +63,18 @@ class PictureViewer:
         """Handle scroll or page up/down key event to navigate images."""
         if not self.images:
             return
+    
+        # Determine the scroll direction
+        if event.delta > 0 or event.keysym == 'Prior':  # Scroll up or Page Up
+            if self.current_image_index > 0:
+                self.current_image_index -= 1
+                self.display_image()
+        else:  # Scroll down or Page Down
+            if self.current_image_index < len(self.images) - 1:
+                self.current_image_index += 1
+                self.display_image()
 
-        if event.delta > 0 or event.keysym == 'Prior':
-            self.current_image_index = (self.current_image_index - 1) % len(self.images)
-        else:
-            self.current_image_index = (self.current_image_index + 1) % len(self.images)
-        
-        self.display_image()
+
 
 if __name__ == "__main__":
     root = tk.Tk()
