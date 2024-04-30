@@ -43,6 +43,7 @@ class PictureViewer:
         self.root.bind("<Next>", self.scroll_image)  # Page Down
         self.root.bind("<Prior>", self.scroll_image)  # Page Up
         self.img_label.bind("<Double-1>", self.open_image)
+        self.resized = False
 
     def open_image(self, event=None):
         """Open an image file for viewing and load all images in the folder."""
@@ -63,6 +64,10 @@ class PictureViewer:
             image = Image.open(image_path)
  
             self.image = image
+
+            if self.resized:
+                self.resize_image()
+                return
             
             photo = ImageTk.PhotoImage(image)
             self.img_label.config(image=photo)
@@ -78,7 +83,7 @@ class PictureViewer:
             # self.file_name_label.config(text=file_name)
             
             
-    def resize_image(self, event):
+    def resize_image(self, event=None):
         """Resize the image to fit the current canvas size, maintaining aspect ratio."""
         if not self.image:
             return
@@ -98,6 +103,11 @@ class PictureViewer:
             ratio = min(label_width / original_width, label_height / original_height)
             new_width = round(original_width * ratio)
             new_height = round(original_height * ratio)
+            
+            if new_width == original_width and new_height == original_height:
+                self.resized = False
+            else:
+                self.resized = True
     
             # Resize the image using Pillow
             resized_image = self.image.resize((new_width, new_height), Image.LANCZOS)
