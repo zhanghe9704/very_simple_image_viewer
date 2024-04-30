@@ -42,7 +42,11 @@ class PictureViewer:
         self.root.bind("<Next>", self.scroll_image)  # Page Down
         self.root.bind("<Prior>", self.scroll_image)  # Page Up
         self.img_label.bind("<Double-1>", self.open_image)
+        self.root.bind("<Double-Button-3>", self.show_original_size)
+        
         self.resized = False
+        self.original_width = 0
+        self.original_height = 0
 
     def open_image(self, event=None):
         """Open an image file for viewing and load all images in the folder."""
@@ -55,6 +59,7 @@ class PictureViewer:
                            if os.path.isfile(os.path.join(directory, f)) and f.endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif'))]
             self.current_image_index = files.index(os.path.basename(path))
             self.display_image()
+            
 
     def display_image(self):
         """Display the current image from images list."""
@@ -63,11 +68,12 @@ class PictureViewer:
             image = Image.open(image_path)
  
             self.image = image
+            self.original_width, self.original_height = self.image.size
 
             if self.resized:
                 self.resize_image()
                 return
-            
+                           
             photo = ImageTk.PhotoImage(image)
             self.img_label.config(image=photo)
             self.img_label.image = photo  # keep a reference!
@@ -130,6 +136,13 @@ class PictureViewer:
             if self.current_image_index < len(self.images) - 1:
                 self.current_image_index += 1
                 self.display_image()
+                
+    def show_original_size(self, event):
+        """Display the current image in its original size."""
+        if hasattr(self, "image"):
+            # Resize the window to fit the original image size
+            self.root.geometry(f"{self.original_width}x{self.original_height}")
+
                 
 if __name__ == "__main__":
     root = tk.Tk()
