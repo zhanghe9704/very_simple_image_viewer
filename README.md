@@ -12,7 +12,7 @@ Developed together with ChatGPT-4
 2. Use PageUp/PageDown key or the scroller on mouse to browse the images inside a folder. 
 3. Resize the image as you change the size of the window while maintaining the ratio. 
 4. Double click the left key on mouse will open a windows in the current folder to choose an image to show. 
-5. Double click the right key on mouse will show the current image in its original size. 
+5. Double click the right key on mouse will show the current image in its original size.  (Does not work when the window is maximized.)
 
 ## How to use
 
